@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE = 'maven:3.8.5-openjdk-17'
+        IMAGE = 'anshnaidu/flightbooking:latest'
     }
 
     stages {
@@ -15,9 +15,9 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    echo '''
-                    docker run --rm -v %cd%:/app -w /app maven:3.8.5-openjdk-17 mvn clean package -DskipTests
-                    '''
+                    echo """
+                    docker run --rm -v ${pwd()}:/app -w /app ${IMAGE} mvn clean package -DskipTests
+                    """
                 }
             }
         }
@@ -25,9 +25,9 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    echo '''
-                    docker run --rm -v %cd%:/app -w /app maven:3.8.5-openjdk-17 mvn test
-                    '''
+                    echo """
+                    docker run --rm -v ${pwd()}:/app -w /app ${IMAGE} mvn test
+                    """
                 }
             }
         }
