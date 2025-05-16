@@ -1,34 +1,33 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.8.5-openjdk-17' // Official Maven + JDK 17 image
-            args '-v /root/.m2:/root/.m2' // Optional: use Maven cache
-        }
-    }
+    agent any
 
     environment {
-        MAVEN_OPTS = "-Dmaven.repo.local=.m2/repository"
+        IMAGE = 'maven:3.8.5-openjdk-17'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/ansh-naidu/Honours-VI-SEM-Assignment.git'
+                git branch: 'main', url: 'https://github.com/ansh-naidu/Honours-VI-SEM-Assignment'
             }
         }
 
         stage('Build') {
             steps {
-                dir('Flightbooking') {
-                    sh 'mvn clean package -DskipTests'
+                script {
+                    echo '''
+                    docker run --rm -v %cd%:/app -w /app maven:3.8.5-openjdk-17 mvn clean package -DskipTests
+                    '''
                 }
             }
         }
 
         stage('Test') {
             steps {
-                dir('Flightbooking') {
-                    sh 'mvn test'
+                script {
+                    echo '''
+                    docker run --rm -v %cd%:/app -w /app maven:3.8.5-openjdk-17 mvn test
+                    '''
                 }
             }
         }
